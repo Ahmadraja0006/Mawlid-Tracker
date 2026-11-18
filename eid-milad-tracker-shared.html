@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Eid Milad un Nabi fund tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --night: #0E2A3B;
+    --night-deep: #081B27;
+    --panel: #153A4F;
+    --panel-soft: #1B4560;
+    --ink: #F4EEDF;
+    --ink-soft: #9FBAC4;
+    --line: rgba(244,238,223,0.12);
+    --gold: #D7AA55;
+    --gold-bright: #EFC978;
+    --gold-soft: rgba(215,170,85,0.16);
+    --jade: #4C9A80;
+    --jade-soft: rgba(76,154,128,0.18);
+    --rose: #BD6A4F;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--night);
+    background-image:
+      radial-gradient(ellipse 520px 320px at 50% -60px, rgba(215,170,85,0.16), transparent 65%),
+      repeating-linear-gradient(135deg, rgba(244,238,223,0.025) 0px, rgba(244,238,223,0.025) 1px, transparent 1px, transparent 34px),
+      repeating-linear-gradient(45deg, rgba(244,238,223,0.025) 0px, rgba(244,238,223,0.025) 1px, transparent 1px, transparent 34px);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+  }
+  .app{
+    width: 100%;
+    max-width: 520px;
+    min-height: 100vh;
+    padding: 28px 18px 60px;
+  }
+  .header-mark{
+    display: flex;
+    justify-content: center;
+    margin: 4px 0 14px;
+    opacity: 0.9;
+  }
+  .eyebrow{
+    font-size: 13px;
+    color: var(--gold-bright);
+    font-weight: 500;
+    margin: 0 0 6px;
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+  h1{
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 28px;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+    text-align: center;
+    color: var(--ink);
+  }
+  .subtitle{
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 0 0 26px;
+    text-align: center;
+  }
+  .stats{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+  .stat-card{
+    background: linear-gradient(180deg, var(--panel), var(--night-deep));
+    border: 1px solid var(--line);
+    border-top: 2px solid var(--gold);
+    border-radius: 14px;
+    padding: 16px 16px 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::after{
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 70px; height: 70px;
+    background: radial-gradient(circle, rgba(215,170,85,0.20), transparent 70%);
+    pointer-events: none;
+  }
+  .stat-label{
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    margin: 0 0 6px;
+  }
+  .stat-value{
+    font-family: 'Fraunces', serif;
+    font-size: 23px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--jade);
+    letter-spacing: -0.01em;
+  }
+  .stat-value.gold{ color: var(--gold-bright); }
+  .settings-row{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    padding: 11px 14px;
+    margin-bottom: 22px;
+  }
+  .settings-row label{
+    font-size: 13px;
+    color: var(--ink-soft);
+    flex: 1;
+  }
+  .settings-row input{
+    width: 90px;
+    padding: 7px 8px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    font-size: 14px;
+    font-family: inherit;
+    text-align: right;
+    background: var(--night-deep);
+    color: var(--ink);
+  }
+  h2{
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 12px;
+    color: var(--ink);
+  }
+  .month-scroll{
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 18px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .month-scroll::-webkit-scrollbar{ height: 4px; }
+  .month-chip{
+    flex-shrink: 0;
+    padding: 9px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    cursor: pointer;
+    white-space: nowrap;
+    position: relative;
+    transition: box-shadow 0.15s ease;
+  }
+  .month-chip.active{
+    background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+    color: var(--night-deep);
+    font-weight: 600;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px var(--gold-soft);
+  }
+  .month-chip .chip-dot{
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--jade);
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .month-chip.active .chip-dot{
+    background: var(--night-deep);
+  }
+  .contrib-list{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 26px;
+  }
+  .contrib-row{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 14px;
+    border-left: 3px solid transparent;
+    transition: border-color 0.15s ease;
+  }
+  .contrib-row.paid{
+    border-left: 3px solid var(--gold);
+    background: linear-gradient(90deg, var(--jade-soft), var(--panel) 40%);
+  }
+  .avatar{
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--panel-soft);
+    color: var(--gold-bright);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+    flex-shrink: 0;
+    font-family: 'Fraunces', serif;
+    border: 1px solid var(--line);
+  }
+  .contrib-row.paid .avatar{
+    background: linear-gradient(160deg, var(--jade), #2F6E5A);
+    color: #fff;
+    border-color: transparent;
+  }
+  .contrib-name{
+    flex: 1;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .contrib-status{
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 1px;
+  }
+  .amount-input{
+    width: 74px;
+    padding: 8px 8px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+    text-align: right;
+    background: var(--night-deep);
+    color: var(--ink);
+  }
+  .paid-toggle{
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 2px solid var(--line);
+    background: transparent;
+    flex-shrink: 0;
+    cursor: pointer;
+    position: relative;
+    padding: 0;
+  }
+  .paid-toggle.on{
+    background: linear-gradient(160deg, var(--gold-bright), var(--gold));
+    border-color: var(--gold);
+  }
+  .paid-toggle.on::after{
+    content: '';
+    position: absolute;
+    top: 8px; left: 11px;
+    width: 6px; height: 11px;
+    border: solid var(--night-deep);
+    border-width: 0 2px 2px 0;
+    transform: rotate(40deg);
+  }
+  .overview-wrap{
+    overflow-x: auto;
+    margin-bottom: 26px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .overview-grid{
+    display: grid;
+    grid-template-columns: 96px repeat(13, 26px);
+    gap: 4px;
+    align-items: center;
+    width: max-content;
+  }
+  .overview-grid .corner{ }
+  .overview-grid .col-head{
+    font-size: 10px;
+    color: var(--ink-soft);
+    text-align: center;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .overview-grid .row-name{
+    font-size: 12.5px;
+    color: var(--ink);
+    padding-right: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .overview-grid .dot-cell{
+    width: 18px; height: 18px;
+    border-radius: 5px;
+    background: var(--panel-soft);
+    margin: 0 auto;
+    border: 1px solid var(--line);
+  }
+  .overview-grid .dot-cell.paid{
+    background: var(--gold);
+    border-radius: 3px;
+    border-color: var(--gold);
+    transform: rotate(45deg) scale(0.72);
+  }
+  .manage-card{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .manage-list{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .manage-item{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding: 6px 2px;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink);
+  }
+  .manage-item:last-child{ border-bottom: none; }
+  .remove-btn{
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    font-size: 18px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px 6px;
+  }
+  .remove-btn:hover{ color: var(--rose); }
+  .add-row{
+    display: flex;
+    gap: 8px;
+  }
+  #new-name{
+    flex: 1;
+    padding: 11px 12px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--night-deep);
+    color: var(--ink);
+  }
+  #add-person-btn{
+    padding: 0 18px;
+    border-radius: 9px;
+    border: none;
+    background: linear-gradient(160deg, var(--gold-bright), var(--gold));
+    color: var(--night-deep);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .empty{
+    text-align: center;
+    padding: 30px 10px;
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+  .admin-bar{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+  }
+  .admin-bar #admin-toggle-btn{
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12.5px;
+    color: var(--ink);
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .signin-card{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  .signin-label{
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0 0 10px;
+    color: var(--ink);
+  }
+  .signin-card input{
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--night-deep);
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .signin-row{
+    display: flex;
+    gap: 8px;
+    margin-top: 2px;
+  }
+  .signin-row button{
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    background: linear-gradient(160deg, var(--gold-bright), var(--gold));
+    color: var(--night-deep);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .signin-row button.secondary{
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .signin-error{
+    font-size: 12.5px;
+    color: var(--rose);
+    margin: 8px 0 0;
+  }
+  .readonly-note{
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    padding: 10px 14px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    margin-bottom: 12px;
+  }
+  .stat-value.rose{ color: var(--rose); }
+  .withdraw-card{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 26px;
+  }
+  .withdraw-list{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 4px;
+  }
+  .withdraw-item{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 2px;
+    border-bottom: 1px solid var(--line);
+  }
+  .withdraw-item:last-child{ border-bottom: none; }
+  .withdraw-info{ flex: 1; min-width: 0; }
+  .withdraw-note{
+    font-size: 14px;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+  .withdraw-date{
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
+  .withdraw-amt{
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--rose);
+    white-space: nowrap;
+  }
+  .withdraw-form{ margin-top: 12px; }
+  .withdraw-form .add-row{ margin-bottom: 8px; }
+  .withdraw-form .add-row input{
+    padding: 11px 12px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--night-deep);
+    color: var(--ink);
+    min-width: 0;
+  }
+  #withdraw-amount{ width: 110px; flex: none; }
+  #withdraw-note{ flex: 1; }
+  #add-withdraw-btn{
+    width: 100%;
+    padding: 11px;
+    border: none;
+    border-radius: 9px;
+    background: linear-gradient(160deg, var(--gold-bright), var(--gold));
+    color: var(--night-deep);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .tab-bar{
+    display: flex;
+    gap: 6px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 22px;
+  }
+  .tab-btn{
+    flex: 1;
+    padding: 9px 10px;
+    border: none;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .tab-btn.active{
+    background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+    color: var(--night-deep);
+    font-weight: 600;
+  }
+  .stat-card.span-2{
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .stat-card.span-2 .stat-label{ margin: 0; }
+  .stat-card.span-2 .stat-value{ font-size: 21px; }
+  .manifesto-intro{
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--ink);
+    margin: 4px 0 22px;
+    text-align: center;
+  }
+  .idea-form{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 22px;
+  }
+  .idea-form input,
+  .idea-form textarea{
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--night-deep);
+    color: var(--ink);
+    margin-bottom: 8px;
+    resize: vertical;
+  }
+  .idea-form textarea{ min-height: 64px; }
+  .idea-form button{
+    width: 100%;
+    padding: 11px;
+    border: none;
+    border-radius: 9px;
+    background: linear-gradient(160deg, var(--gold-bright), var(--gold));
+    color: var(--night-deep);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .idea-error{
+    font-size: 12.5px;
+    color: var(--rose);
+    margin: 8px 0 0;
+  }
+  .idea-list{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .idea-card{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--jade);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .idea-card p{
+    margin: 0;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+  .idea-card .idea-by{
+    margin-top: 8px;
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="admin-bar" id="admin-bar">
+    <span id="admin-status">Viewing only</span>
+    <button id="admin-toggle-btn">Admin sign in</button>
+  </div>
+
+  <div class="signin-card" id="signin-card" style="display:none;">
+    <p class="signin-label">Sign in as admin</p>
+    <input type="email" id="admin-email" placeholder="Email" autocomplete="username">
+    <input type="password" id="admin-password" placeholder="Password" autocomplete="current-password">
+    <div class="signin-row">
+      <button id="signin-submit">Sign in</button>
+      <button id="signin-cancel" class="secondary">Cancel</button>
+    </div>
+    <p class="signin-error" id="signin-error" style="display:none;"></p>
+  </div>
+
+  <div class="header-mark">
+    <svg width="46" height="46" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M27 8C20.5 9.4 15.8 15.1 15.8 22C15.8 30 22.3 36.5 30.3 36.5C33.2 36.5 35.9 35.6 38 34.1C34.9 38.7 29.6 41.7 23.6 41.7C14.1 41.7 6.4 34 6.4 24.5C6.4 15.5 13.3 8.1 22.1 7.4C23.8 7.2 25.4 7.6 27 8Z" stroke="#D7AA55" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M34.5 4L36 8.3L40.3 9.8L36 11.3L34.5 15.6L33 11.3L28.7 9.8L33 8.3L34.5 4Z" fill="#D7AA55"/>
+    </svg>
+  </div>
+  <p class="eyebrow">Community fund</p>
+  <h1>Eid Milad un Nabi tracker</h1>
+  <p class="subtitle">August 2026 &ndash; August 2027, monthly contributions</p>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab-fund">Fund</button>
+    <button class="tab-btn" id="tab-ideas">Manifesto</button>
+  </div>
+
+  <div id="fund-view">
+    <div class="stats">
+      <div class="stat-card">
+        <p class="stat-label">Total collected</p>
+        <p class="stat-value gold" id="total-collected">₹0</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Contributors</p>
+        <p class="stat-value" id="contributor-count">0</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">This month</p>
+        <p class="stat-value" id="month-progress">0 / 0</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Fully paid months</p>
+        <p class="stat-value" id="months-complete">0 / 13</p>
+      </div>
+      <div class="stat-card span-2">
+        <p class="stat-label" id="month-total-label">Collected in this month</p>
+        <p class="stat-value gold" id="month-total">₹0</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Withdrawn</p>
+        <p class="stat-value rose" id="total-withdrawn">₹0</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Balance in hand</p>
+        <p class="stat-value" id="balance-left">₹0</p>
+      </div>
+    </div>
+
+    <div class="settings-row" id="settings-row">
+      <label for="default-amount">Suggested amount per person (₹)</label>
+      <input type="number" id="default-amount" min="0" step="1">
+    </div>
+    <p class="readonly-note" id="readonly-note" style="display:none;">You're viewing live data. Only the admin can make changes.</p>
+
+    <h2>Select month</h2>
+    <div class="month-scroll" id="month-scroll"></div>
+
+    <h2 id="contrib-heading">Contributions</h2>
+    <div class="contrib-list" id="contrib-list"></div>
+    <div class="empty" id="empty-state" style="display:none;">No contributors yet — add someone below.</div>
+
+    <h2>Overview</h2>
+    <div class="overview-wrap">
+      <div class="overview-grid" id="overview-grid"></div>
+    </div>
+
+    <h2>Withdrawals</h2>
+    <div class="withdraw-card">
+      <div class="withdraw-list" id="withdraw-list"></div>
+      <div class="empty" id="withdraw-empty" style="display:none;">No withdrawals yet.</div>
+      <div class="withdraw-form" id="withdraw-form" style="display:none;">
+        <div class="add-row">
+          <input type="number" id="withdraw-amount" placeholder="Amount (₹)" min="1" step="1">
+          <input type="text" id="withdraw-note" placeholder="What was it for?" maxlength="60">
+        </div>
+        <button id="add-withdraw-btn">Record withdrawal</button>
+        <p class="idea-error" id="withdraw-error" style="display:none;"></p>
+      </div>
+    </div>
+
+    <div id="manage-section">
+      <h2>Manage contributors</h2>
+      <div class="manage-card">
+        <div class="manage-list" id="manage-list"></div>
+        <div class="add-row">
+          <input type="text" id="new-name" placeholder="Add a contributor's name" maxlength="40">
+          <button id="add-person-btn">Add</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="ideas-view" style="display:none;">
+    <p class="manifesto-intro">A shared space for how we mark Eid Milad un Nabi this year — a program idea, a dish to bring, a reading, a place to gather. Anyone can add a line below.</p>
+
+    <div class="idea-form">
+      <input type="text" id="idea-name" placeholder="Your name (optional)" maxlength="40">
+      <textarea id="idea-text" placeholder="Share an idea for this year's Mawlid..." maxlength="400" rows="3"></textarea>
+      <button id="add-idea-btn">Share idea</button>
+      <p class="idea-error" id="idea-error" style="display:none;"></p>
+    </div>
+
+    <div class="idea-list" id="idea-list"></div>
+    <div class="empty" id="idea-empty" style="display:none;">No ideas shared yet — be the first.</div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+// ---- Firebase setup ----
+// Replace this with the config object from your Firebase project
+// (Project settings -> General -> Your apps -> SDK setup and configuration)
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDeDgEBkJNyWvoy0Jw-_Yej8zGG2PlDgRw",
+  authDomain: "mawlid-tracker.firebaseapp.com",
+  databaseURL: "https://mawlid-tracker-default-rtdb.firebaseio.com",
+  projectId: "mawlid-tracker",
+  storageBucket: "mawlid-tracker.firebasestorage.app",
+  messagingSenderId: "559012802751",
+  appId: "1:559012802751:web:7675c7110570fe05d5d60a"
+};
+firebase.initializeApp(FIREBASE_CONFIG);
+const auth = firebase.auth();
+const db = firebase.database();
+const FUND_REF = db.ref('fund');
+const IDEAS_REF = db.ref('ideas');
+</script>
+<script>
+const INITIAL_NAMES = ['Ahmad', 'Danish', 'Arbaz', 'Minhaj', 'Asjad', 'Arman', 'Faiyaz'];
+
+function generateMonths(){
+  const months = [];
+  let y = 2026, m = 8;
+  while(y < 2027 || (y === 2027 && m <= 8)){
+    const key = y + '-' + String(m).padStart(2, '0');
+    const label = new Date(y, m - 1, 1).toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
+    months.push({ key, label });
+    m++;
+    if(m > 12){ m = 1; y++; }
+  }
+  return months;
+}
+const MONTHS = generateMonths();
+
+function uid(){
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+let state = {
+  contributors: [],
+  payments: {},
+  withdrawals: [],
+  defaultAmount: 100
+};
+function currentMonthKey(){
+  const now = new Date();
+  const key = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+  if(key < MONTHS[0].key) return MONTHS[0].key;
+  if(key > MONTHS[MONTHS.length - 1].key) return MONTHS[MONTHS.length - 1].key;
+  return key;
+}
+let selectedMonth = currentMonthKey();
+let monthScrollCentered = false;
+let loaded = false;
+let isAdmin = false;
+
+const totalCollectedEl = document.getElementById('total-collected');
+const contributorCountEl = document.getElementById('contributor-count');
+const monthProgressEl = document.getElementById('month-progress');
+const monthsCompleteEl = document.getElementById('months-complete');
+const defaultAmountInput = document.getElementById('default-amount');
+const monthScrollEl = document.getElementById('month-scroll');
+const contribListEl = document.getElementById('contrib-list');
+const contribHeadingEl = document.getElementById('contrib-heading');
+const emptyEl = document.getElementById('empty-state');
+const overviewGridEl = document.getElementById('overview-grid');
+const manageListEl = document.getElementById('manage-list');
+const newNameInput = document.getElementById('new-name');
+const addPersonBtn = document.getElementById('add-person-btn');
+const manageSectionEl = document.getElementById('manage-section');
+const readonlyNoteEl = document.getElementById('readonly-note');
+const adminStatusEl = document.getElementById('admin-status');
+const adminToggleBtn = document.getElementById('admin-toggle-btn');
+const signinCard = document.getElementById('signin-card');
+const adminEmailInput = document.getElementById('admin-email');
+const adminPasswordInput = document.getElementById('admin-password');
+const signinSubmit = document.getElementById('signin-submit');
+const signinCancel = document.getElementById('signin-cancel');
+const signinError = document.getElementById('signin-error');
+const monthTotalEl = document.getElementById('month-total');
+const monthTotalLabelEl = document.getElementById('month-total-label');
+const tabFundBtn = document.getElementById('tab-fund');
+const tabIdeasBtn = document.getElementById('tab-ideas');
+const fundViewEl = document.getElementById('fund-view');
+const ideasViewEl = document.getElementById('ideas-view');
+const ideaNameInput = document.getElementById('idea-name');
+const ideaTextInput = document.getElementById('idea-text');
+const addIdeaBtn = document.getElementById('add-idea-btn');
+const ideaErrorEl = document.getElementById('idea-error');
+const ideaListEl = document.getElementById('idea-list');
+const ideaEmptyEl = document.getElementById('idea-empty');
+const totalWithdrawnEl = document.getElementById('total-withdrawn');
+const balanceLeftEl = document.getElementById('balance-left');
+const withdrawListEl = document.getElementById('withdraw-list');
+const withdrawEmptyEl = document.getElementById('withdraw-empty');
+const withdrawFormEl = document.getElementById('withdraw-form');
+const withdrawAmountInput = document.getElementById('withdraw-amount');
+const withdrawNoteInput = document.getElementById('withdraw-note');
+const addWithdrawBtn = document.getElementById('add-withdraw-btn');
+const withdrawErrorEl = document.getElementById('withdraw-error');
+
+function paymentKey(personId, monthKey){
+  return personId + '__' + monthKey;
+}
+
+function initials(name){
+  return name.trim().split(/\s+/).map(p => p[0]).slice(0, 2).join('').toUpperCase();
+}
+
+function attachDataListener(){
+  FUND_REF.on('value', (snapshot) => {
+    const val = snapshot.val();
+    if(val){
+      state = {
+        contributors: val.contributors || [],
+        payments: val.payments || {},
+        withdrawals: val.withdrawals || [],
+        defaultAmount: typeof val.defaultAmount === 'number' ? val.defaultAmount : 100
+      };
+    }else if(isAdmin){
+      // First time setup: seed default contributors (admin only, since rules require auth to write)
+      state = {
+        contributors: INITIAL_NAMES.map(name => ({ id: uid(), name })),
+        payments: {},
+        withdrawals: [],
+        defaultAmount: 100
+      };
+      save();
+    }
+    loaded = true;
+    defaultAmountInput.value = state.defaultAmount;
+    renderAll();
+  }, (error) => {
+    console.error('Could not read data', error);
+  });
+}
+
+function save(){
+  if(!isAdmin) return;
+  FUND_REF.set(state).catch(err => console.error('Could not save', err));
+}
+
+function togglePaid(personId, monthKey){
+  if(!isAdmin) return;
+  const key = paymentKey(personId, monthKey);
+  const existing = state.payments[key];
+  if(existing && existing.paid){
+    delete state.payments[key];
+  }else{
+    state.payments[key] = {
+      paid: true,
+      amount: state.defaultAmount,
+      date: new Date().toISOString()
+    };
+  }
+  save();
+  renderAll();
+}
+
+function updateAmount(personId, monthKey, value){
+  if(!isAdmin) return;
+  const key = paymentKey(personId, monthKey);
+  const num = Number(value);
+  if(state.payments[key]){
+    state.payments[key].amount = isNaN(num) ? 0 : num;
+    save();
+    renderStats();
+  }
+}
+
+function addContributor(name){
+  if(!isAdmin) return;
+  const trimmed = name.trim();
+  if(!trimmed) return;
+  state.contributors.push({ id: uid(), name: trimmed });
+  save();
+  renderAll();
+}
+
+function removeContributor(id){
+  if(!isAdmin) return;
+  state.contributors = state.contributors.filter(c => c.id !== id);
+  Object.keys(state.payments).forEach(k => {
+    if(k.startsWith(id + '__')) delete state.payments[k];
+  });
+  save();
+  renderAll();
+}
+
+function renderMonthScroll(){
+  const prevScroll = monthScrollEl.scrollLeft;
+  monthScrollEl.innerHTML = '';
+  MONTHS.forEach(m => {
+    const chip = document.createElement('button');
+    chip.className = 'month-chip' + (m.key === selectedMonth ? ' active' : '');
+    const paidCount = state.contributors.filter(c => state.payments[paymentKey(c.id, m.key)]?.paid).length;
+    const allPaid = state.contributors.length > 0 && paidCount === state.contributors.length;
+    chip.innerHTML = m.label + (allPaid ? '<span class="chip-dot"></span>' : '');
+    chip.onclick = () => { selectedMonth = m.key; renderAll(); };
+    monthScrollEl.appendChild(chip);
+  });
+  if(!monthScrollCentered){
+    // First load: bring the current month into view
+    const active = monthScrollEl.querySelector('.month-chip.active');
+    if(active){
+      monthScrollEl.scrollLeft = active.offsetLeft - (monthScrollEl.clientWidth - active.offsetWidth) / 2;
+      monthScrollCentered = true;
+    }
+  }else{
+    monthScrollEl.scrollLeft = prevScroll;
+  }
+}
+
+function renderContribList(){
+  const monthLabel = MONTHS.find(m => m.key === selectedMonth)?.label || '';
+  contribHeadingEl.textContent = 'Contributions \u2014 ' + monthLabel;
+  contribListEl.innerHTML = '';
+
+  if(state.contributors.length === 0){
+    emptyEl.style.display = 'block';
+    contribListEl.style.display = 'none';
+    return;
+  }
+  emptyEl.style.display = 'none';
+  contribListEl.style.display = 'flex';
+
+  state.contributors.forEach(c => {
+    const key = paymentKey(c.id, selectedMonth);
+    const payment = state.payments[key];
+    const isPaid = !!(payment && payment.paid);
+
+    const row = document.createElement('div');
+    row.className = 'contrib-row' + (isPaid ? ' paid' : '');
+
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar';
+    avatar.textContent = initials(c.name);
+
+    const nameWrap = document.createElement('div');
+    nameWrap.className = 'contrib-name';
+    nameWrap.innerHTML = c.name + '<div class="contrib-status">' + (isPaid ? 'Paid' : 'Not paid yet') + '</div>';
+
+    row.appendChild(avatar);
+    row.appendChild(nameWrap);
+
+    if(isPaid && isAdmin){
+      const amountInput = document.createElement('input');
+      amountInput.type = 'number';
+      amountInput.className = 'amount-input';
+      amountInput.min = '0';
+      amountInput.value = payment.amount;
+      amountInput.addEventListener('change', (e) => updateAmount(c.id, selectedMonth, e.target.value));
+      row.appendChild(amountInput);
+    }else if(isPaid && !isAdmin){
+      const amountSpan = document.createElement('span');
+      amountSpan.style.fontSize = '13px';
+      amountSpan.style.color = 'var(--ink-soft)';
+      amountSpan.textContent = '\u20b9' + payment.amount;
+      row.appendChild(amountSpan);
+    }
+
+    if(isAdmin){
+      const toggle = document.createElement('button');
+      toggle.className = 'paid-toggle' + (isPaid ? ' on' : '');
+      toggle.setAttribute('aria-label', isPaid ? 'Mark not paid' : 'Mark paid');
+      toggle.onclick = () => togglePaid(c.id, selectedMonth);
+      row.appendChild(toggle);
+    }else{
+      const dot = document.createElement('div');
+      dot.className = 'paid-toggle' + (isPaid ? ' on' : '');
+      dot.style.cursor = 'default';
+      row.appendChild(dot);
+    }
+
+    contribListEl.appendChild(row);
+  });
+}
+
+function renderOverview(){
+  overviewGridEl.innerHTML = '';
+  const corner = document.createElement('div');
+  corner.className = 'corner';
+  overviewGridEl.appendChild(corner);
+
+  MONTHS.forEach(m => {
+    const head = document.createElement('div');
+    head.className = 'col-head';
+    head.textContent = m.label.replace(' ', ' \u2019').replace('\u201920', '\u201920');
+    head.textContent = m.label;
+    overviewGridEl.appendChild(head);
+  });
+
+  state.contributors.forEach(c => {
+    const rowName = document.createElement('div');
+    rowName.className = 'row-name';
+    rowName.textContent = c.name;
+    overviewGridEl.appendChild(rowName);
+
+    MONTHS.forEach(m => {
+      const cell = document.createElement('div');
+      const paid = !!state.payments[paymentKey(c.id, m.key)]?.paid;
+      cell.className = 'dot-cell' + (paid ? ' paid' : '');
+      overviewGridEl.appendChild(cell);
+    });
+  });
+}
+
+function renderManageList(){
+  manageListEl.innerHTML = '';
+  if(state.contributors.length === 0){
+    const p = document.createElement('p');
+    p.style.fontSize = '13px';
+    p.style.color = 'var(--ink-soft)';
+    p.textContent = 'No contributors yet.';
+    manageListEl.appendChild(p);
+    return;
+  }
+  state.contributors.forEach(c => {
+    const row = document.createElement('div');
+    row.className = 'manage-item';
+    const span = document.createElement('span');
+    span.textContent = c.name;
+    const btn = document.createElement('button');
+    btn.className = 'remove-btn';
+    btn.textContent = '\u00d7';
+    btn.setAttribute('aria-label', 'Remove ' + c.name);
+    btn.onclick = () => {
+      if(confirm('Remove ' + c.name + ' and all their recorded payments?')){
+        removeContributor(c.id);
+      }
+    };
+    row.appendChild(span);
+    row.appendChild(btn);
+    manageListEl.appendChild(row);
+  });
+}
+
+function totalCollected(){
+  let t = 0;
+  Object.values(state.payments).forEach(p => { if(p.paid) t += Number(p.amount) || 0; });
+  return t;
+}
+
+function totalWithdrawn(){
+  return state.withdrawals.reduce((sum, w) => sum + (Number(w.amount) || 0), 0);
+}
+
+function addWithdrawal(){
+  if(!isAdmin) return;
+  withdrawErrorEl.style.display = 'none';
+  const amount = Number(withdrawAmountInput.value);
+  const note = withdrawNoteInput.value.trim();
+  const fail = (msg) => { withdrawErrorEl.textContent = msg; withdrawErrorEl.style.display = 'block'; };
+  if(!amount || amount <= 0) return fail('Enter a valid amount.');
+  if(!note) return fail('Add a short note on what it was for.');
+  const balance = totalCollected() - totalWithdrawn();
+  if(amount > balance) return fail('That is more than the balance in hand (\u20b9' + balance.toLocaleString() + ').');
+  state.withdrawals.push({ id: uid(), amount: amount, note: note, date: new Date().toISOString() });
+  withdrawAmountInput.value = '';
+  withdrawNoteInput.value = '';
+  save();
+  renderAll();
+}
+
+function removeWithdrawal(id){
+  if(!isAdmin) return;
+  state.withdrawals = state.withdrawals.filter(w => w.id !== id);
+  save();
+  renderAll();
+}
+
+function renderWithdrawals(){
+  withdrawListEl.innerHTML = '';
+  if(state.withdrawals.length === 0){
+    withdrawEmptyEl.style.display = 'block';
+    return;
+  }
+  withdrawEmptyEl.style.display = 'none';
+  const sorted = state.withdrawals.slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  sorted.forEach(w => {
+    const row = document.createElement('div');
+    row.className = 'withdraw-item';
+    const info = document.createElement('div');
+    info.className = 'withdraw-info';
+    const note = document.createElement('div');
+    note.className = 'withdraw-note';
+    note.textContent = w.note;
+    const date = document.createElement('div');
+    date.className = 'withdraw-date';
+    date.textContent = w.date ? new Date(w.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+    info.appendChild(note);
+    info.appendChild(date);
+    const amt = document.createElement('div');
+    amt.className = 'withdraw-amt';
+    amt.textContent = '\u2212\u20b9' + (Number(w.amount) || 0).toLocaleString();
+    row.appendChild(info);
+    row.appendChild(amt);
+    if(isAdmin){
+      const btn = document.createElement('button');
+      btn.className = 'remove-btn';
+      btn.textContent = '\u00d7';
+      btn.setAttribute('aria-label', 'Remove withdrawal');
+      btn.onclick = () => {
+        if(confirm('Remove this withdrawal of \u20b9' + (Number(w.amount) || 0).toLocaleString() + '?')){
+          removeWithdrawal(w.id);
+        }
+      };
+      row.appendChild(btn);
+    }
+    withdrawListEl.appendChild(row);
+  });
+}
+
+function renderStats(){
+  let total = 0;
+  Object.values(state.payments).forEach(p => {
+    if(p.paid) total += Number(p.amount) || 0;
+  });
+  totalCollectedEl.textContent = '\u20b9' + total.toLocaleString();
+  const withdrawn = totalWithdrawn();
+  totalWithdrawnEl.textContent = '\u20b9' + withdrawn.toLocaleString();
+  const balance = total - withdrawn;
+  balanceLeftEl.textContent = '\u20b9' + balance.toLocaleString();
+  balanceLeftEl.style.color = balance < 0 ? 'var(--rose)' : '';
+  contributorCountEl.textContent = state.contributors.length;
+
+  const paidThisMonth = state.contributors.filter(c => state.payments[paymentKey(c.id, selectedMonth)]?.paid).length;
+  monthProgressEl.textContent = paidThisMonth + ' / ' + state.contributors.length;
+
+  let monthTotal = 0;
+  state.contributors.forEach(c => {
+    const p = state.payments[paymentKey(c.id, selectedMonth)];
+    if(p && p.paid) monthTotal += Number(p.amount) || 0;
+  });
+  const monthLabel = MONTHS.find(m => m.key === selectedMonth)?.label || '';
+  monthTotalLabelEl.textContent = 'Collected in ' + monthLabel;
+  monthTotalEl.textContent = '\u20b9' + monthTotal.toLocaleString();
+
+  let fullMonths = 0;
+  if(state.contributors.length > 0){
+    MONTHS.forEach(m => {
+      const paidCount = state.contributors.filter(c => state.payments[paymentKey(c.id, m.key)]?.paid).length;
+      if(paidCount === state.contributors.length) fullMonths++;
+    });
+  }
+  monthsCompleteEl.textContent = fullMonths + ' / ' + MONTHS.length;
+}
+
+function renderAll(){
+  if(!loaded) return;
+  renderMonthScroll();
+  renderContribList();
+  renderOverview();
+  renderManageList();
+  renderWithdrawals();
+  renderStats();
+  applyAdminVisibility();
+}
+
+function applyAdminVisibility(){
+  manageSectionEl.style.display = isAdmin ? 'block' : 'none';
+  withdrawFormEl.style.display = isAdmin ? 'block' : 'none';
+  document.getElementById('settings-row').style.display = isAdmin ? 'flex' : 'none';
+  readonlyNoteEl.style.display = isAdmin ? 'none' : 'block';
+  adminStatusEl.textContent = isAdmin ? 'Signed in as admin' : 'Viewing only';
+  adminToggleBtn.textContent = isAdmin ? 'Sign out' : 'Admin sign in';
+}
+
+defaultAmountInput.addEventListener('change', (e) => {
+  if(!isAdmin) return;
+  const val = Number(e.target.value);
+  state.defaultAmount = isNaN(val) ? 0 : val;
+  save();
+});
+
+addWithdrawBtn.addEventListener('click', addWithdrawal);
+
+addPersonBtn.addEventListener('click', () => {
+  addContributor(newNameInput.value);
+  newNameInput.value = '';
+});
+
+newNameInput.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter'){
+    addContributor(newNameInput.value);
+    newNameInput.value = '';
+  }
+});
+
+// ---- Admin sign-in wiring ----
+adminToggleBtn.addEventListener('click', () => {
+  if(isAdmin){
+    auth.signOut();
+  }else{
+    signinCard.style.display = signinCard.style.display === 'none' ? 'block' : 'none';
+    signinError.style.display = 'none';
+  }
+});
+
+signinCancel.addEventListener('click', () => {
+  signinCard.style.display = 'none';
+  adminEmailInput.value = '';
+  adminPasswordInput.value = '';
+  signinError.style.display = 'none';
+});
+
+signinSubmit.addEventListener('click', () => {
+  const email = adminEmailInput.value.trim();
+  const password = adminPasswordInput.value;
+  if(!email || !password){
+    signinError.textContent = 'Enter both email and password.';
+    signinError.style.display = 'block';
+    return;
+  }
+  auth.signInWithEmailAndPassword(email, password)
+    .then(() => {
+      signinCard.style.display = 'none';
+      adminEmailInput.value = '';
+      adminPasswordInput.value = '';
+      signinError.style.display = 'none';
+    })
+    .catch((err) => {
+      signinError.textContent = 'Sign-in failed. Check your email and password.';
+      signinError.style.display = 'block';
+    });
+});
+
+auth.onAuthStateChanged((user) => {
+  isAdmin = !!user;
+  applyAdminVisibility();
+  if(loaded) renderAll();
+});
+
+// ---- Manifesto / ideas board (open to everyone, no admin required) ----
+let ideas = [];
+
+function attachIdeasListener(){
+  IDEAS_REF.on('value', (snapshot) => {
+    const val = snapshot.val() || {};
+    ideas = Object.keys(val).map(key => ({ id: key, ...val[key] }));
+    ideas.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    renderIdeas();
+  }, (error) => {
+    console.error('Could not read ideas', error);
+  });
+}
+
+function renderIdeas(){
+  ideaListEl.innerHTML = '';
+  if(ideas.length === 0){
+    ideaEmptyEl.style.display = 'block';
+    ideaListEl.style.display = 'none';
+    return;
+  }
+  ideaEmptyEl.style.display = 'none';
+  ideaListEl.style.display = 'flex';
+
+  ideas.forEach(idea => {
+    const card = document.createElement('div');
+    card.className = 'idea-card';
+    const p = document.createElement('p');
+    p.textContent = idea.text || '';
+    const by = document.createElement('div');
+    by.className = 'idea-by';
+    by.textContent = '\u2014 ' + (idea.name && idea.name.trim() ? idea.name.trim() : 'Anonymous');
+    card.appendChild(p);
+    card.appendChild(by);
+    ideaListEl.appendChild(card);
+  });
+}
+
+function submitIdea(){
+  const text = ideaTextInput.value.trim();
+  ideaErrorEl.style.display = 'none';
+  if(!text){
+    ideaErrorEl.textContent = 'Write an idea before sharing.';
+    ideaErrorEl.style.display = 'block';
+    return;
+  }
+  IDEAS_REF.push({
+    name: ideaNameInput.value.trim(),
+    text: text,
+    date: new Date().toISOString()
+  }).then(() => {
+    ideaNameInput.value = '';
+    ideaTextInput.value = '';
+  }).catch((err) => {
+    console.error('Could not save idea', err);
+    ideaErrorEl.textContent = 'Could not share your idea right now — try again.';
+    ideaErrorEl.style.display = 'block';
+  });
+}
+
+addIdeaBtn.addEventListener('click', submitIdea);
+
+// ---- Tab switching ----
+function showTab(tab){
+  const isFund = tab === 'fund';
+  fundViewEl.style.display = isFund ? 'block' : 'none';
+  ideasViewEl.style.display = isFund ? 'none' : 'block';
+  tabFundBtn.classList.toggle('active', isFund);
+  tabIdeasBtn.classList.toggle('active', !isFund);
+}
+tabFundBtn.addEventListener('click', () => showTab('fund'));
+tabIdeasBtn.addEventListener('click', () => showTab('ideas'));
+
+attachDataListener();
+attachIdeasListener();
+</script>
+</body>
+</html>
